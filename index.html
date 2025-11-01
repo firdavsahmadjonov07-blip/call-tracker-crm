@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Call Tracker CRM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#0f0f0f,#1c1c1c);
+    color: #fff;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    background: linear-gradient(90deg,#1f6feb,#238636);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 20px rgba(0,255,200,0.3);
+  }
+  header h1 { 
+    margin:0; 
+    font-size:24px; 
+    text-shadow:0 0 10px rgba(255,255,255,0.6);
+  }
+  header button {
+    background:#fff; 
+    color:#1f6feb; 
+    border:none; 
+    padding:6px 12px; 
+    border-radius:6px; 
+    cursor:pointer;
+    font-weight:600; 
+    transition:0.3s;
+  }
+  header button:hover { 
+    transform: translateY(-2px); 
+    box-shadow:0 0 15px rgba(0,255,200,0.6);
+  }
+  .container { padding:20px; animation: fadeIn 1s ease-in; }
+  table { 
+    width:100%; 
+    border-collapse:collapse; 
+    margin-bottom:15px; 
+    border-radius:10px; 
+    overflow:hidden; 
+    box-shadow:0 0 30px rgba(0,255,200,0.2);
+    animation: slideUp 0.8s ease-out;
+  }
+  th, td { 
+    padding:10px; 
+    text-align:center; 
+    border:1px solid rgba(255,255,255,0.1);
+  }
+  th { 
+    background: rgba(31,111,235,0.9); 
+    color:#fff; 
+    text-shadow:0 0 6px rgba(0,0,0,0.4);
+  }
+  input, select { 
+    padding:6px; 
+    border-radius:6px; 
+    border:none; 
+    width:100%; 
+    font-size:14px; 
+    box-sizing:border-box; 
+    background: rgba(255,255,255,0.05); 
+    color:#fff;
+  }
+  select option { color:#000; }
+  .buttons { margin-top:10px; display:flex; gap:10px; }
+  .buttons button {
+    padding:10px 18px; 
+    border-radius:10px; 
+    border:none; 
+    cursor:pointer; 
+    font-weight:600; 
+    transition:0.3s;
+    box-shadow:0 0 15px rgba(0,255,200,0.3);
+  }
+  .buttons button:hover { 
+    transform:translateY(-4px) scale(1.05); 
+    box-shadow:0 0 30px rgba(0,255,200,0.6);
+  }
+  .addRow { background:#28a745; color:white; }
+  .export { background:#1f6feb; color:white; }
+  .notify { background:#ffc107; color:black; }
+
+  /* Статусы */
+  .cdl-yes { background: rgba(0,255,0,0.3);}
+  .cdl-no { background: rgba(255,0,0,0.3);}
+  .status-pending { background: rgba(255,255,0,0.3);}
+  .status-hired { background: rgba(0,255,0,0.3);}
+  .status-rejected { background: rgba(255,0,0,0.3);}
+
+  /* Анимации */
+  @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+  @keyframes slideUp { from {transform:translateY(20px); opacity:0;} to {transform:translateY(0); opacity:1;} }
+</style>
+</head>
+<body>
+<header>
+  <h1>📞 Call Tracker CRM</h1>
+  <button id="langSwitcher">RU</button>
+</header>
+
+<div class="container">
+  <table id="callTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>CDL</th>
+        <th>Driver Type</th>
+        <th>Source</th>
+        <th>Result</th>
+        <th>Next Action</th>
+        <th>Comments</th>
+        <th>Recruiter</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="date"></td>
+        <td><input type="text"></td>
+        <td><input type="text"></td>
+        <td>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </td>
+        <td>
+          <select>
+            <option>Company Driver</option>
+            <option>Owner Operator</option>
+          </select>
+        </td>
+        <td>
+          <select>
+            <option>Facebook</option>
+            <option>Indeed</option>
+            <option>Instagram</option>
+            <option>Referral</option>
+          </select>
+        </td>
+        <td>
+          <select class="status">
+            <option>Pending</option>
+            <option>Hired</option>
+            <option>Rejected</option>
+          </select>
+        </td>
+        <td>
+          <select>
+            <option>Follow-up</option>
+            <option>Send Docs</option>
+            <option>Interview</option>
+          </select>
+        </td>
+        <td><input type="text"></td>
+        <td><input type="text" placeholder="Your Name"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="buttons">
+    <button class="addRow">➕ Add Row</button>
+    <button class="export">📤 Export to Google Sheets</button>
+    <button class="notify">📧 Send Email Notification</button>
+  </div>
+</div>
+
+<script>
+// const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFbVIMslKB74_BJAiRjKIUM-bap8rfrySXFqY_8pLCJabQexwzEpLXtdLTBk5k49-4/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytFKg8xEILExE4INyE6qO20h5PbwAyQyyQJMIpvZatBzJ5CObLwUyhhCO7KfSoX3o/exec";
+const langSwitcher = document.getElementById("langSwitcher");
+const headers = document.querySelectorAll("th");
+
+let currentLang = "EN";
+const texts = {
+  EN: ["Date","Name","Phone","CDL","Driver Type","Source","Result","Next Action","Comments","Recruiter"],
+  RU: ["Дата","Имя","Телефон","CDL","Тип водителя","Источник","Результат","Следующее действие","Комментарии","Рекрутер"]
+};
+
+langSwitcher.addEventListener("click",()=>{
+  currentLang=currentLang==="EN"?"RU":"EN";
+  langSwitcher.textContent=currentLang==="EN"?"RU":"EN";
+  headers.forEach((h,i)=>h.textContent=texts[currentLang][i]);
+});
+
+// Function to set today's date
+function setTodayDate(row) {
+  const dateInput = row.querySelector('input[type="date"]');
+  if (dateInput) {
+    dateInput.value = new Date().toISOString().slice(0, 10);
+  }
+}
+
+// Add Row
+document.querySelector(".addRow").addEventListener("click",()=>{
+  const tbody=document.querySelector("tbody");
+  const row=tbody.querySelector("tr").cloneNode(true);
+  row.querySelectorAll("input").forEach(input=>input.value="");
+  row.querySelectorAll("select").forEach(sel=>sel.selectedIndex=0);
+  setTodayDate(row); // Set date for new row
+  tbody.appendChild(row);
+  colorize();
+});
+
+// Set date for the initial row
+document.addEventListener('DOMContentLoaded', () => {
+  const initialRow = document.querySelector("tbody tr");
+  setTodayDate(initialRow);
+});
+
+// Export to Google Sheets
+document.querySelector(".export").addEventListener("click",(e)=>{
+  const exportButton = e.target;
+  const originalButtonText = exportButton.textContent;
+  exportButton.textContent = "📤 Sending...";
+  exportButton.disabled = true;
+  const headers = ["date", "name", "phone", "cdl", "driverType", "source", "result", "nextAction", "comments", "recruiter"];
+  const rows = Array.from(document.querySelectorAll("tbody tr")).map(tr => {
+    const values = Array.from(tr.querySelectorAll("input, select")).map(el => el.value);
+    const rowObject = {};
+    headers.forEach((header, index) => {
+      rowObject[header] = values[index];
+    });
+    return rowObject;
+  });
+
+  // const formData = new FormData();
+  // formData.append("payload", JSON.stringify({ data: rows }));
+
+  // fetch(SCRIPT_URL, {
+  //   method: "POST",
+  //   body: formData
+  // })
+  const formData = new FormData();
+  formData.append("payload", JSON.stringify({ data: rows }));
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: formData
+  })
+
+  .then(res => res.json())
+  .then(resp => {
+    if (resp.status === "success") {
+      alert("✅ Data saved successfully!");
+      // Очистка таблицы после успешного экспорта
+      const tbody = document.querySelector("tbody");
+      tbody.innerHTML = "";
+      const newRow = document.createElement("tr");
+      newRow.innerHTML = `
+        <td><input type="date"></td>
+        <td><input type="text"></td>
+        <td><input type="text"></td>
+        <td><select><option>Yes</option><option>No</option></select></td>
+        <td><select><option>Company Driver</option><option>Owner Operator</option></select></td>
+        <td><select><option>Facebook</option><option>Indeed</option><option>Instagram</option><option>Referral</option></select></td>
+        <td><select class="status"><option>Pending</option><option>Hired</option><option>Rejected</option></select></td>
+        <td><select><option>Follow-up</option><option>Send Docs</option><option>Interview</option></select></td>
+        <td><input type="text"></td>
+        <td><input type="text" placeholder="Your Name"></td>
+      `;
+      tbody.appendChild(newRow);
+      colorize();
+    } else {
+      alert("❌ Error saving data: " + resp.message);
+    }
+  })
+  .catch(err => {
+    alert("❌ Network Error: " + err);
+  })
+  .finally(() => {
+    exportButton.textContent = originalButtonText;
+    exportButton.disabled = false;
+  });
+});
+
+// Email Notification
+document.querySelector(".notify").addEventListener("click",()=>{
+  alert("📧 Email notification will be sent automatically when exporting to Sheets.");
+});
+
+// Coloring rows
+function colorize(){
+  document.querySelectorAll("tbody tr").forEach(tr=>{
+    const cdlSel=tr.querySelector("td:nth-child(4) select");
+    const statusSel=tr.querySelector("td:nth-child(7) select");
+
+    tr.querySelector("td:nth-child(4)").className="";
+    tr.querySelector("td:nth-child(7)").className="";
+
+    if(cdlSel.value==="Yes") tr.querySelector("td:nth-child(4)").classList.add("cdl-yes");
+    else tr.querySelector("td:nth-child(4)").classList.add("cdl-no");
+
+    if(statusSel.value==="Pending") tr.querySelector("td:nth-child(7)").classList.add("status-pending");
+    else if(statusSel.value==="Hired") tr.querySelector("td:nth-child(7)").classList.add("status-hired");
+    else if(statusSel.value==="Rejected") tr.querySelector("td:nth-child(7)").classList.add("status-rejected");
+  });
+}
+
+document.addEventListener("change",colorize);
+colorize();
+</script>
+</body>
+</html>
